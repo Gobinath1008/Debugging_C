@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Debug | Arts & Science Event 2026</title>
+    <link rel="icon" type="image/png" href="media/logo.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #1a1a1a;
+            --bg-workspace: #282828;
+            --bg-pane: #262626;
+            --accent-orange: #ffa116;
+            --accent-green: #2db55d;
+            --accent-blue: #007aff;
+            --text-primary: #eff1f6f2;
+            --text-secondary: #eff1f699;
+            --border: #3e3e3e;
+            --font-main: 'Inter', sans-serif;
+            --font-code: 'Fira Code', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            height: 50px;
+            background: var(--bg-pane);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 700;
+            color: var(--accent-orange);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .timer {
+            font-family: var(--font-code);
+            font-weight: 600;
+            color: var(--text-primary);
+            background: #333;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            height: calc(100vh - 50px);
+            width: 100%;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Registration */
+        #registration-screen {
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at 50% 50%, #2c2c2c 0%, #1a1a1a 100%);
+        }
+
+        .reg-card {
+            background: var(--bg-pane);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid var(--border);
+        }
+
+        .reg-card h2 {
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        .reg-card p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            background: #333;
+            border: 1px solid var(--border);
+            padding: 0.8rem;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: var(--accent-orange);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent-orange);
+            color: black;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s, filter 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+            filter: none;
+        }
+
+        /* Workspace */
+        .workspace-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            width: 100%;
+            background: var(--bg-workspace);
+            gap: 1px;
+        }
+
+        .sidebar {
+            background: var(--bg-pane);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .problem-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .problem-item {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .problem-item:hover {
+            background: #333;
+        }
+
+        .problem-item.active {
+            background: rgba(255, 161, 22, 0.1);
+            color: var(--accent-orange);
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #444;
+        }
+
+        .status-dot.solved {
+            background: var(--accent-green);
+        }
+
+        .workspace-main {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 1px;
+            background: var(--border);
+        }
+
+        .pane {
+            background: var(--bg-pane);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pane-header {
+            padding: 10px 1.5rem;
+            background: #1e1e1e;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 44px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .language-dropdown {
+            background: #2b2b2b;
+            color: #e6e6e6;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .language-dropdown:hover {
+            border-color: #666;
+        }
+
+        .language-dropdown:focus {
+            border-color: var(--accent-orange);
+        }
+
+        .btn-action {
+            background: #333;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: #444;
+        }
+
+        .btn-action.run {
+            color: var(--accent-green);
+            background: rgba(45, 181, 93, 0.1);
+            border-color: rgba(45, 181, 93, 0.3);
+        }
+
+        .btn-action.run:hover {
+            background: rgba(45, 181, 93, 0.2);
+        }
+
+        .btn-action.submit {
+            background: var(--accent-blue);
+            border-color: transparent;
+        }
+
+        .btn-action.submit:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-action.finish {
+            background: var(--accent-green);
+            border-color: transparent;
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .desc-content {
+            padding: 1.5rem;
+            overflow-y: auto;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .desc-content h2 {
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .difficulty {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .difficulty.easy {
+            background: rgba(45, 181, 93, 0.15);
+            color: var(--accent-green);
+        }
+
+        .difficulty.medium {
+            background: rgba(255, 184, 0, 0.15);
+            color: #ffb800;
+        }
+
+        .example-block {
+            background: #333;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: var(--font-code);
+            margin: 1rem 0;
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+
+        .editor-container {
+            flex: 1;
+            position: relative;
+            background: #1e1e1e;
+        }
+
+        #code-editor {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            color: #dcdcdc;
+            font-family: var(--font-code);
+            font-size: 14px;
+            padding: 1.5rem;
+            border: none;
+            resize: none;
+            outline: none;
+            line-height: 1.5;
+        }
+
+        .console-pane {
+            background: var(--bg-pane);
+            display: flex;
+            flex-direction: column;
+            height: 180px;
+            border-top: 1px solid var(--border);
+        }
+
+        .console-output {
+            padding: 1rem 1.5rem;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            color: #00ff00;
+            overflow-y: auto;
+            flex: 1;
+            white-space: pre-wrap;
+            background: #111;
+        }
+
+        .error-text {
+            color: #ff5f56;
+        }
+
+        .success-text {
+            color: #2db55d;
+        }
+
+        /* Summary & Overlays */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: var(--bg-pane);
+            padding: 2.5rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 550px;
+            border: 1px solid var(--border);
+        }
+
+        .summary-card {
+            background: var(--bg-pane);
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 700px;
+            border: 1px solid var(--border);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-box {
+            background: #333;
+            padding: 1.2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #violation-warning {
+            position: fixed;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff5f56;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 10px 30px rgba(255, 95, 86, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo" onclick="handleAdminTrigger()"
+                style="cursor: default; display: flex; align-items: center; gap: 0.8rem;">
+                <img src="media/logo.png" height="32" style="object-fit: contain;">
+                INEXON'26 DEBUG
+            </div>
+            <div id="user-display" class="hidden" style="display: flex; align-items: center; gap: 1rem;">
+                <span id="header-name" style="font-size: 0.9rem; font-weight: 600;"></span>
+                <span id="header-code"
+                    style="color: var(--accent-orange); font-family: var(--font-code); background: rgba(255,161,22,0.1); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;"></span>
+                <div id="violation-count"
+                    style="color: #ff5f56; font-size: 0.8rem; font-weight: 600; background: rgba(255, 95, 86, 0.1); padding: 0.2rem 0.5rem; border-radius: 4px; display: none;">
+                    Warnings: 1/2</div>
+                <div class="timer" id="timer-display">20:00</div>
+            </div>
+        </header>
+
+        <div id="violation-warning">WARNING: Tab switching is restricted! First violation recorded.</div>
+
+        <div id="rules-modal" class="modal-overlay">
+            <div class="modal-card">
+                <h2 style="color: var(--accent-orange);">Competition Rules</h2>
+                <div class="rules-list">
+                    <ul>
+                        <li>This is a time-restricted debugging challenge (20 minutes).</li>
+                        <li><strong>Standard Lock:</strong> Upon agreement, the screen will enter fullscreen mode.</li>
+                        <li><strong>Strict Surveillance:</strong> You are restricted from switching tabs or windows.
+                        </li>
+                        <li><strong>Violations:</strong>
+                            <ul>
+                                <li>1st violation: A warning message will appear.</li>
+                                <li>2nd violation: Your session will be <strong>terminated immediately</strong>.</li>
+                            </ul>
+                        </li>
+                        <li>Ensure a stable internet connection before starting.</li>
+                    </ul>
+                </div>
+                <button class="btn" onclick="agreeRules()">I Agree & Start Test</button>
+            </div>
+        </div>
+
+        <!-- Leaderboard Modal -->
+        <div id="leaderboard-modal" class="modal-overlay">
+            <div class="modal-card" style="max-width: 700px;">
+                <h2
+                    style="color: var(--accent-orange); display: flex; justify-content: space-between; align-items: center;">
+                    Event Leaderboard
+                    <span style="cursor: pointer; font-size: 1.2rem;" onclick="closeLeaderboard()">✖</span>
+                </h2>
+                <div id="leaderboard-content">
+                    <p style="color: var(--text-secondary); margin-top: 1rem;">Loading scores...</p>
+                </div>
+                <button class="btn" style="margin-top: 1.5rem;" onclick="closeLeaderboard()">Close</button>
+            </div>
+        </div>
+
+        <main class="main-workspace">
+            <section id="registration-screen" class="screen active">
+                <div class="reg-card">
+                    <h2>Event Registration</h2>
+                    <p>Enter your details to start the debugging challenge</p>
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" id="reg-name" placeholder="Name" oninput="validateReg()">
+                    </div>
+                    <div class="input-group">
+                        <label>Roll Number</label>
+                        <input type="text" id="reg-roll" placeholder="Roll No" oninput="validateReg()">
+                    </div>
+                    <div class="input-group">
+                        <label>Department</label>
+                        <select id="reg-dept" onchange="validateReg()">
+                            <option value="">Select Dept</option>
+                                <option value="MCA">MCA</option>
+                                <option value="M.Sc (CS)">M.Sc (CS)</option>
+                                <option value="BCA">BCA</option>
+                                <option value="B.Sc (CS)">B.Sc (CS)</option>
+                                <option value="B.Sc (IT)">B.Sc (IT)</option>
+                                <option value="B.Sc (AI & DS)">B.Sc (AI & DS)</option>
+                                <option value="B.Sc (Maths)">B.Sc (Maths)</option>
+                                <option value="B.Sc (Physics)">B.Sc (Physics)</option>
+                                <option value="B.Sc (Chemistry)">B.Sc (Chemistry)</option>
+                                <option value="BCOM">BCOM</option>
+                                <option value="BCOM-CA">BCOM-CA</option>
+                                <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <button id="start-btn" class="btn" disabled onclick="startChallenge()">Enter Workspace</button>
+                </div>
+            </section>
+
+            <section id="competition-screen" class="screen">
+                <div class="workspace-layout">
+                    <aside class="sidebar">
+                        <div class="sidebar-header">PROBLEMS (0)</div>
+                        <div class="problem-list" id="problem-list"></div>
+                    </aside>
+
+                    <div class="workspace-main">
+                        <div class="pane">
+                            <div class="pane-header">Description</div>
+                            <div id="description-pane" class="desc-content">
+                                <h2 id="prob-title">Selecting Problem...</h2>
+                                <div id="prob-meta"></div>
+                                <div id="prob-desc">
+                                    <p>Select a problem from the left to begin.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pane" style="border-right: none;">
+                            <div class="pane-header">
+                                <span>Code</span>
+                                <div class="header-actions">
+                                    <select id="workspace-lang" class="language-dropdown" onchange="changeLanguage()">
+                                        <option value="">Select Language</option>
+                                        <option value="Java">Java</option>
+                                        <option value="C">C</option>
+                                    </select>
+                                    <button class="btn-action run" onclick="runCode()">Run</button>
+                                    <button id="next-btn" class="btn-action submit"
+                                        onclick="nextProblem()">Next</button>
+                                    <button id="finish-btn" class="btn-action finish" onclick="finishChallenge()"
+                                        style="display: none;">Submit</button>
+                                </div>
+                            </div>
+                            <div class="editor-container">
+                                <textarea id="code-editor" spellcheck="false"
+                                    placeholder="// Write/Fix code here..."></textarea>
+                            </div>
+
+                            <div class="console-pane" id="console-pane">
+                                <div class="pane-header"
+                                    style="height: 36px; padding: 0 1rem;">
+                                    <span>Console</span>
+                                </div>
+                                <div class="console-output" id="console-output">
+                                    Click "Run" to see output.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary-screen" class="screen">
+                <div class="summary-card">
+                    <h1 style="color: var(--accent-green); margin-bottom: 1rem;">Submission Recorded</h1>
+                    <p style="color: var(--text-secondary);">Congratulations on completing the 2026 Debugging Event.</p>
+                    <div class="summary-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Participant</div>
+                            <div id="sum-name" style="font-weight: 600;">--</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Roll Number</div>
+                            <div id="sum-roll" style="font-weight: 600; color: var(--accent-orange);">--</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Unique ID</div>
+                            <div id="sum-code" style="color: var(--accent-orange);">--</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Language</div>
+                            <div id="sum-lang" style="font-weight: 600; color: var(--accent-blue);">--</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Problems Attempted</div>
+                            <div id="sum-attempted">0/10</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Problems Solved</div>
+                            <div id="sum-solved" style="color: var(--accent-green); font-weight: 700;">0/10</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Duration</div>
+                            <div id="sum-duration">--</div>
+                        </div>
+                        <div class="stat-box" id="sum-db-box"
+                            style="display: none; border-color: var(--accent-orange);">
+                            <div class="stat-label">Database Record ID</div>
+                            <div id="sum-db-id"
+                                style="font-family: var(--font-code); color: var(--accent-orange); font-size: 0.9rem;">
+                                --</div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-secondary);">Screenshot this page
+                        for your records.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const PROBLEMS = [
+            {
+                id: 1, round: 1, lang: 'C', title: 'C Incorrect Format Specifier', diff: 'Easy',
+                desc: 'The `printf` function is using an incorrect format specifier. `%s` is for strings, but the `total` variable is an integer. It should be `%d`.',
+                testCases: [{ input: 'N/A', output: 'The total count is 50' }],
+                initialCode: `#include <stdio.h>
+int main() {
+    int total = 50;
+    printf("The total count is %s", total);
+    return 0;
+}`,
+                solutionCode: `#include <stdio.h>
+int main() {
+    int total = 50;
+    printf("The total count is %d", total);
+    return 0;
+}`,
+                bugOutput: 'Exception: Segmentation Fault or Garbage Value'
+            },
+            {
+                id: 2, round: 1, lang: 'C', title: 'C Assignment vs. Comparison', diff: 'Easy',
+                desc: 'A single equals sign `=` is the assignment operator. For comparison, the double equals sign `==` must be used. The expression `(score = 100)` assigns 100 to `score` and evaluates to 100, which is considered true.',
+                testCases: [{ input: 'score = 0', output: 'Keep trying!' }],
+                initialCode: `#include <stdio.h>
+int main() {
+    int score == 0;
+    if (score = 100) {
+        printf("Perfect Score!");
+    } else {
+        printf("Keep trying!");
+    }
+    return 0;
+}`,
+                solutionCode: `#include <stdio.h>
+int main() {
+    int score = 0;
+    if (score == 100) {
+        printf("Perfect Score!");
+    } else {
+        printf("Keep trying!");
+    }
+    return 0;
+}`,
+                bugOutput: 'Console: Perfect Score!'
+            },
+            {
+                id: 3, round: 1, lang: 'C', title: 'C Missing Header File', diff: 'Easy',
+                desc: 'The `printf` function is declared in the standard input/output header file `<stdio.h>`. This header must be included to use the function without a compiler warning or error.',
+                testCases: [{ input: 'N/A', output: 'Welcome to the Symposium' }],
+                initialCode: `int main() {
+    print("Welcome to the Symposium");
+    return 0;
+}`,
+                solutionCode: `#include <stdio.h>
+int main() {
+    printf("Welcome to the Symposium");
+    return 0;
+}`,
+                bugOutput: "Compiler Warning/Error: Implicit declaration of function 'printf'"
+            },
+            {
+                id: 4, round: 1, lang: 'C', title: 'C Uninitialized Variable in Loop', diff: 'Easy',
+                desc: 'The loop counter variable `i` is used in the condition `i < 5` before it has been given a value. It must be initialized (e.g., `int i = 0;`) to ensure predictable behavior.',
+                testCases: [{ input: 'N/A', output: '0 1 2 3 4 ' }],
+                initialCode: `#include <stdio.h>
+int main() {
+    int i;
+    whlie (i < 5) {
+        printf("%d ", i);
+        i++;
+    }
+    return 0;
+}`,
+                solutionCode: `#include <stdio.h>
+int main() {
+    int i = 0;
+    while (i < 5) {
+        printf("%d ", i);
+        i++;
+    }
+    return 0;
+}`,
+                bugOutput: 'Console: (Garbage values or unpredictable loop behavior)'
+            },
+            {
+                id: 5, round: 1, lang: 'C', title: 'C Character vs. String Literal', diff: 'Easy',
+                desc: 'In C, single quotes `\'A\'` are used for character literals, while double quotes `"A"` are for string literals (which are pointers to characters). A `char` variable can only hold a single character.',
+                testCases: [{ input: 'N/A', output: 'Grade: A' }],
+                initialCode: `#include <stdio.h>
+int main() {
+    char grade;
+    grade = "A";
+    printf("Grade: %c", grade);
+    return 0;
+}`,
+                solutionCode: `#include <stdio.h>
+int main() {
+    char grade;
+    grade = 'A';
+    printf("Grade: %c", grade);
+    return 0;
+}`,
+                bugOutput: "Compiler Error: invalid conversion from 'const char*' to 'char'"
+            },
+            {
+                id: 6, round: 1, lang: 'C', title: 'C Integer Division', diff: 'Moderate',
+                desc: 'When dividing two integers, C performs integer division, truncating any fractional part. To get a floating-point result, one of the integers must be cast to a `float` or `double` before the division.',
+                testCases: [{ input: 'a=7, b=2', output: 'Average is: 3.5' }],
+                initialCode: `#include <stdio.h>
+int main() {
+    int a = 7, b = 2;
+    float avg = a / b;
+    printf("Average is: %.1f", avg);
+    return 0;
+}`,
+                solutionCode: `#include <stdio.h>
+int main() {
+    int a = 7, b = 2;
+    float avg = (float)a / b;
+    printf("Average is: %.1f", avg);
+    return 0;
+}`,
+                bugOutput: 'Console: Average is: 3.0'
+            },
+            {
+                id: 7, round: 1, lang: 'C', title: 'C Post-increment vs Pre-increment', diff: 'Moderate',
+                desc: 'The post-increment operator `x++` uses the value of `x` and then increments it. The pre-increment operator `++x` increments the value first and then uses the new value. The original code checks `5 == 6`, which is false.',
+                testCases: [{ input: 'x=5', output: 'Condition Met' }],
+                initialCode: `#include <stdio.h>
+int main() {
+    int x = 5;
+    if (x++ == 6) {
+        printf("Condition Met");
+    } else {
+        printf("Value is %d", x);
+    }
+    return 0;
+}`,
+                solutionCode: `#include <stdio.h>
+int main() {
+    int x = 5;
+    if (++x == 6) {
+        printf("Condition Met");
+    } else {
+        printf("Value is %d", x);
+    }
+    return 0;
+}`,
+                bugOutput: 'Console: Value is 6'
+            },
+            {
+                id: 8, round: 1, lang: 'C', title: 'C Errant Semicolon in Loop', diff: 'Moderate',
+                desc: 'A semicolon after the `for` loop\'s parenthesis terminates the loop statement. The loop runs with an empty body 10 times. The block with `count++` is executed only once afterward.',
+                testCases: [{ input: 'N/A', output: '10' }],
+                initialCode: `#include <stbio.h>
+int main() {
+    int count = 0;
+    for (int i = 0; i < 10; i-+);
+    {
+        count++;
+    }
+    printf("%d", count);
+    return 0;
+}`,
+                solutionCode: `#include <stdio.h>
+int main() {
+    int count = 0;
+    for (int i = 0; i < 10; i++)
+    {
+        count++;
+    }
+    printf("%d", count);
+    return 0;
+}`,
+                bugOutput: 'Console: 1'
+            },
+            {
+                id: 9, round: 1, lang: 'C', title: 'C Array Out-of-Bounds', diff: 'Moderate',
+                desc: 'An array of size 2 has indices 0 and 1. Accessing `arr[2]` writes to and reads from memory outside the array\'s bounds, which is undefined behavior and can lead to crashes or unexpected results. The array size must be increased to accommodate index 2.',
+                testCases: [{ input: 'N/A', output: '30' }],
+                initialCode: `#include <stdio.h>
+int main() {
+    int arr[2] = {10, 20};
+    arr[2] = 30;
+    printf("%d", arr[2]);
+    return 0;
+}`,
+                solutionCode: `#include <stdio.h>
+int main() {
+    int arr[3] = {10, 20};
+    arr[2] = 30;
+    printf("%d", arr[2]);
+    return 0;
+}`,
+                bugOutput: 'Exception: Segmentation Fault or Garbage Value'
+            },
+            {
+                id: 10, round: 1, lang: 'C', title: 'C Logical Operator Short-Circuiting', diff: 'Moderate',
+                desc: 'The logical AND `&&` operator does not evaluate its right-hand side if the left-hand side is false. To ensure the assignment to `q` happens regardless, a bitwise AND `&` can be used, as it does not short-circuit.',
+                testCases: [{ input: 'p=0, q=10', output: 'q = 20' }],
+                initialCode: `#include <stbio.h>
+int main() {
+    int p = 0, q = 10;
+    if (p && (q = 20)) {
+        printf("Success ");
+    }
+    printf("q = %d", q);
+    return 0;
+}`,
+                solutionCode: `#include <stdio.h>
+int main() {
+    int p = 0, q = 10;
+    if (p & (q = 20)) {
+        printf("Success ");
+    }
+    printf("q = %d", q);
+    return 0;
+}`,
+                bugOutput: 'Console: q = 10'
+            }
+        ];
+
+        let ALL_PROBLEMS = [...PROBLEMS];
+        let SESSION_PROBLEMS = [];
+        let activeProbIdx = -1;
+        let student = { name: '', roll: '', dept: '', code: '', lang: '' };
+        let currentRound = 1;
+        let examStarted = false;
+        let startTime, timeLeft = 1200;
+        let violations = 0;
+        let solvedProblemIds = new Set();
+        let attemptedProblemIds = new Set();
+        let userSubmissions = {};
+
+        function updateSidebarHeader() {
+            const solvedCount = solvedProblemIds.size;
+            const totalCount = SESSION_PROBLEMS.length;
+            document.querySelector('.sidebar-header').innerText = `PROBLEMS (${solvedCount}/${totalCount})`;
+        }
+
+        function validateReg() {
+            const name = document.getElementById('reg-name').value;
+            const roll = document.getElementById('reg-roll').value;
+            const dept = document.getElementById('reg-dept').value;
+            document.getElementById('start-btn').disabled = !(name && roll && dept);
+        }
+
+        function startChallenge() {
+            student.name = document.getElementById('reg-name').value;
+            student.roll = document.getElementById('reg-roll').value;
+            student.dept = document.getElementById('reg-dept').value;
+            student.code = `DBG26-${student.dept.substring(0, 2).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+            document.getElementById('rules-modal').classList.add('active');
+        }
+
+        function agreeRules() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) elem.requestFullscreen();
+            document.getElementById('rules-modal').classList.remove('active');
+            enterWorkspace();
+        }
+
+        function enterWorkspace() {
+            examStarted = true;
+            startTime = new Date();
+            document.getElementById('header-name').innerText = student.name;
+            document.getElementById('header-code').innerText = student.code;
+            document.getElementById('user-display').classList.remove('hidden');
+            document.getElementById('registration-screen').classList.remove('active');
+            document.getElementById('competition-screen').classList.add('active');
+            initRound(currentRound);
+            startTimer();
+            setupSecurity();
+        }
+
+        function initRound() {
+            student.lang = 'C';
+            SESSION_PROBLEMS = ALL_PROBLEMS;
+
+            // UI updates
+            document.getElementById('workspace-lang').innerHTML = '<option value="C">C</option>';
+            document.getElementById('workspace-lang').value = 'C';
+            document.getElementById('workspace-lang').disabled = true;
+            updateSidebarHeader();
+            initProblemsList();
+            selectProblem(0);
+        }
+
+        function initProblemsList() {
+            const list = document.getElementById('problem-list');
+            list.innerHTML = '';
+            SESSION_PROBLEMS.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'problem-item';
+                div.id = `prob-item-${i}`;
+                div.onclick = () => { selectProblem(i); };
+                div.innerHTML = `<span class="status-dot" id="dot-${p.id}"></span> ${i + 1}. ${p.title}`;
+                list.appendChild(div);
+            });
+        }
+
+        function selectProblem(idx) {
+            if (SESSION_PROBLEMS.length === 0) return;
+            if (activeProbIdx !== -1) {
+                userSubmissions[SESSION_PROBLEMS[activeProbIdx].id] = document.getElementById('code-editor').value;
+            }
+            activeProbIdx = idx;
+            const p = SESSION_PROBLEMS[idx];
+            attemptedProblemIds.add(p.id);
+            document.querySelectorAll('.problem-item').forEach(el => el.classList.remove('active'));
+            const activeItem = document.getElementById(`prob-item-${idx}`);
+            if (activeItem) activeItem.classList.add('active');
+            document.getElementById('prob-title').innerText = `${idx + 1}. ${p.title}`;
+            document.getElementById('prob-meta').innerHTML = `<span class="difficulty ${p.diff.toLowerCase()}">${p.diff}</span>`;
+            
+            let testCasesHTML = '';
+            if (p.testCases && p.testCases.length > 0) {
+                p.testCases.forEach((tc, index) => {
+                    testCasesHTML += `
+                        <div class="example-block">
+                            <p style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Test Case ${index + 1}</p>
+                            <p><strong>Input:</strong> <code>${tc.input}</code></p>
+                            <p><strong>Expected Output:</strong> <code>${tc.output}</code></p>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('prob-desc').innerHTML = `<p>${p.desc}</p>${testCasesHTML}`;
+            document.getElementById('code-editor').value = userSubmissions[p.id] || p.initialCode;
+            document.getElementById('console-output').innerText = 'Click "Run" to see output.';
+
+            const nextBtn = document.getElementById('next-btn');
+            const finishBtn = document.getElementById('finish-btn');
+            if (activeProbIdx === SESSION_PROBLEMS.length - 1) {
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'block';
+                finishBtn.innerText = 'Final Submit';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                finishBtn.style.display = 'none';
+            }
+        }
+
+        function nextProblem() {
+            if (activeProbIdx < SESSION_PROBLEMS.length - 1) selectProblem(activeProbIdx + 1);
+        }
+
+        function runCode() {
+            const p = SESSION_PROBLEMS[activeProbIdx];
+            const currentCode = document.getElementById('code-editor').value;
+            const out = document.getElementById('console-output');
+            out.innerHTML = '<span style="color: grey;">Compiling and running...</span>\n\n';
+
+            // Normalize code by removing comments and all whitespace for robust comparison
+            const normalize = (str) => str.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').replace(/\s+/g, '');
+
+            const isSolved = normalize(currentCode) === normalize(p.solutionCode);
+            const isUnchanged = normalize(currentCode) === normalize(p.initialCode);
+
+            setTimeout(() => {
+                if (isSolved) {
+                    out.innerHTML += `<span class="success-text">Output Match! Bug resolved.</span>`;
+                    document.getElementById(`dot-${p.id}`).classList.add('solved');
+                    solvedProblemIds.add(p.id);
+                } else if (isUnchanged) {
+                    out.innerHTML += `<span class="error-text">${p.bugOutput}</span>`;
+                    solvedProblemIds.delete(p.id);
+                    document.getElementById(`dot-${p.id}`).classList.remove('solved');
+                } else {
+                    out.innerHTML += `<span class="error-text">Bug still present! Check logic again.</span>`;
+                    solvedProblemIds.delete(p.id);
+                    document.getElementById(`dot-${p.id}`).classList.remove('solved');
+                }
+                userSubmissions[p.id] = currentCode;
+                updateSidebarHeader();
+            }, 800);
+        }
+
+        async function finishChallenge(isAuto = false, isViolation = false) {
+            if (solvedProblemIds.size === 0 && !isAuto && !isViolation) { alert("Solve at least one problem correctly."); return; }
+            // Removed confirmation dialog to allow for immediate submission.
+
+            // The test is now officially over. Stop timer and violation tracking immediately.
+            examStarted = false;
+            const timeDiff = Math.floor((new Date() - startTime) / 1000);
+
+            // Prepare summary UI (Intermediate if Round 1)
+            document.getElementById('sum-name').innerText = student.name;
+            document.getElementById('sum-roll').innerText = student.roll;
+            document.getElementById('sum-code').innerText = student.code;
+            document.getElementById('sum-lang').innerText = student.lang;
+            document.getElementById('sum-duration').innerText = `${Math.floor(timeDiff / 60)}m ${timeDiff % 60}s`;
+            document.getElementById('sum-attempted').innerText = `${attemptedProblemIds.size}/${SESSION_PROBLEMS.length}`;
+            document.getElementById('sum-solved').innerText = `${solvedProblemIds.size}/${SESSION_PROBLEMS.length}`;
+
+            // Database Submission
+            await submitResultToDB(timeDiff);
+
+            // Final Summary
+            document.getElementById('competition-screen').classList.remove('active');
+            document.getElementById('summary-screen').classList.add('active');
+            document.getElementById('user-display').classList.add('hidden');
+            const btn = document.querySelector('#summary-screen .btn');
+            if (btn) {
+                btn.innerText = "Close Summary";
+                btn.onclick = () => window.location.reload();
+            }
+            if (document.fullscreenElement) document.exitFullscreen();
+        }
+
+        async function submitResultToDB(timeSpent) {
+            const payload = {
+                name: student.name, rollNumber: student.roll, department: student.dept,
+                uniqueCode: student.code, round: currentRound, language: student.lang,
+                timeSpentSeconds: timeSpent, attemptedCount: attemptedProblemIds.size,
+                solvedCount: solvedProblemIds.size
+            };
+            try {
+                const res = await fetch('/api/submit', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    document.getElementById('sum-db-box').style.display = 'block';
+                    document.getElementById('sum-db-id').innerText = result.id;
+                }
+            } catch (e) { console.error("Sync Error:", e); }
+        }
+
+        function setupSecurity() {
+            window.addEventListener('blur', recordViolation);
+            document.addEventListener('visibilitychange', () => { if (document.hidden) recordViolation(); });
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('keydown', e => {
+                if ((e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'u')) || e.key === 'F12') e.preventDefault();
+            });
+        }
+
+        function recordViolation() {
+            if (!examStarted) return;
+            violations++;
+            document.getElementById('violation-count').innerText = `Warnings: ${violations}/2`;
+            document.getElementById('violation-count').style.display = 'block';
+            if (violations === 1) {
+                const w = document.getElementById('violation-warning');
+                w.style.display = 'block';
+                setTimeout(() => w.style.display = 'none', 5000);
+            } else if (violations >= 2) { terminateSession(); }
+        }
+
+        function terminateSession() {
+            examStarted = false;
+            alert("Session terminated due to violations.");
+            finishChallenge(true, true);
+        }
+
+        let isAdmin = false;
+        let logoClicks = 0;
+
+        function handleAdminTrigger() {
+            logoClicks++;
+            if (logoClicks >= 5) {
+                logoClicks = 0;
+                adminLogin();
+            }
+            // Reset clicks after 2 seconds
+            setTimeout(() => { logoClicks = 0; }, 2000);
+        }
+
+        function adminLogin() {
+            const pass = prompt("Enter Admin Password:");
+            if (pass === "admin123") {
+                isAdmin = true;
+                alert("Admin access granted.");
+                showLeaderboard();
+            } else if (pass !== null) {
+                alert("Incorrect password.");
+            }
+        }
+
+        async function showLeaderboard() {
+            if (!isAdmin) {
+                return; // Silently fail for non-admins if they somehow trigger it
+            }
+            document.getElementById('leaderboard-modal').classList.add('active');
+            const content = document.getElementById('leaderboard-content');
+            content.innerHTML = '<p style="color: grey;">Loading scores...</p>';
+            try {
+                const res = await fetch('/api/leaderboard');
+                const data = await res.json();
+                if (res.ok) {
+                    if (data.length === 0) { content.innerHTML = '<p>No results yet.</p>'; return; }
+                    let html = `<table class="leaderboard-table"><thead><tr><th>Rank</th><th>Name</th><th>R</th><th>Solved</th><th>Time</th></tr></thead><tbody>`;
+                    data.forEach((r, i) => {
+                        html += `<tr><td>#${i + 1}</td><td>${r.name}<br><small>${r.roll_number}</small></td><td>R${r.round || 1}</td><td>${r.solved_count}/10</td><td>${Math.floor(r.time_spent_seconds / 60)}m</td></tr>`;
+                    });
+                    content.innerHTML = html + '</tbody></table>';
+                }
+            } catch (e) { content.innerHTML = '<p>Connection error.</p>'; }
+        }
+
+        function closeLeaderboard() { document.getElementById('leaderboard-modal').classList.remove('active'); }
+        function startTimer() {
+            const d = document.getElementById('timer-display');
+            const itv = setInterval(() => {
+                if (!examStarted) { clearInterval(itv); return; }
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                d.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) { clearInterval(itv); finishChallenge(true); }
+            }, 1000);
+        }
+
+        function toggleConsole() { document.getElementById('console-pane').classList.toggle('hidden'); }
+        function changeLanguage() { /* Disabled for rounds */ }
+    </script>
+</body>
+
+</html>

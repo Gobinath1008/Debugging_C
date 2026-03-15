@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div align="center">
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
@@ -36,3 +37,7 @@ This app is optimized for deployment on **Vercel** with **MongoDB Atlas**.
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key (if needed for Java generation features).
 3. Run the app:
    `npm run dev`
+=======
+# Debugging_C
+Debugging website for C programming
+>>>>>>> 79e4c25c797cc5271baff9dcc8793225e96cc293

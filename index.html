@@ -485,7 +485,6 @@
         .leaderboard-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
         }
 
         .leaderboard-table th,
@@ -493,6 +492,11 @@
             text-align: left;
             padding: 1rem;
             border-bottom: 1px solid var(--border);
+        }
+
+        #leaderboard-content {
+            max-height: 60vh;
+            overflow-y: auto;
         }
 
         .hidden {
@@ -1205,9 +1209,11 @@ int main() {
                 const data = await res.json();
                 if (res.ok) {
                     if (data.length === 0) { content.innerHTML = '<p>No results yet.</p>'; return; }
-                    let html = `<table class="leaderboard-table"><thead><tr><th>Rank</th><th>Name</th><th>R</th><th>Solved</th><th>Time</th></tr></thead><tbody>`;
+                    let html = `<table class="leaderboard-table"><thead><tr><th>Rank</th><th>Name</th><th>R</th><th>Solved</th><th>Time</th><th>Score</th></tr></thead><tbody>`;
                     data.forEach((r, i) => {
-                        html += `<tr><td>#${i + 1}</td><td>${r.name}<br><small>${r.roll_number}</small></td><td>R${r.round || 1}</td><td>${r.solved_count}/10</td><td>${Math.floor(r.time_spent_seconds / 60)}m</td></tr>`;
+                        // Score is calculated as: (1000 * problems solved) - (time in seconds)
+                        const score = (r.solved_count * 1000) - r.time_spent_seconds;
+                        html += `<tr><td>#${i + 1}</td><td>${r.name}<br><small>${r.roll_number}</small></td><td>R${r.round || 1}</td><td>${r.solved_count}/10</td><td>${Math.floor(r.time_spent_seconds / 60)}m</td><td>${score}</td></tr>`;
                     });
                     content.innerHTML = html + '</tbody></table>';
                 }
